@@ -7,6 +7,7 @@ enum BatchStatus:
     SHIPPED
     REJECTED
 
+
 enum ShipmentStatus:
     SHIPPED
     RECEIVED
