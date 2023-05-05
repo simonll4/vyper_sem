@@ -1,10 +1,9 @@
 # @version ^0.3.7
 
+
 enum BookStates:
     AVAILABLE
     RENTED
-    MAINTENANCE
-    OUT_OF_SERVICE
 
 struct Book:
     bookId: String[36]
@@ -22,24 +21,27 @@ def __init__():
     self.owner = msg.sender
 
 @external
-def saveNewBook(book: Book):
-    self.booksByTitle[book.bookTitle] = book 
-
-@view
-@external
-def viewBookData(title: String[36]) -> Book:
-    book: Book = self.booksByTitle[title]
-    assert book.bookId != empty(String[36])
-    return book
-
-@external
 def rentBook(title: String[36]) -> Book:
+    assert msg.sender == self.owner, "Esta funcion solo puede ser accedida por el owner"
     book : Book = self.booksByTitle[title]  # Buscamos el libro por el titulo que nos dan
     assert book.bookId != empty(String[36]), "No existe un libro con ese titulo" # Verificar si el book existe
     assert book.bookState == BookStates.AVAILABLE, "El libro no esta disponible en este momento" # Verifica si el book esta disponible
     book.bookState = BookStates.RENTED
-    book.rentDate = block.timestamp # Obtenemos la fecha de hoy
-    book.returnDate = book.rentDate + 604800 # a la fecha de hoy le sumamos 7 dias(en seg) legal?
+    book.rentDate = block.timestamp # Obtenemos fecha de hoy
+    book.returnDate = book.rentDate + 604800 # Seteamos la fecha de devolucion hoy + ...
+    self.booksByTitle[book.bookTitle] = book # Guardamos el libro pero en estado rentado
     return book
 
+@external
+def returnBook(book: Book):
+    assert book.bookState != BookStates.AVAILABLE, "Error en devolucion de libro" # Verifica si el libro recibido del veifier tiene el estado correcto
+    self.booksByTitle[book.bookTitle] = book
 
+
+@view
+@external
+def viewBookData(title: String[36]) -> Book:
+    assert msg.sender == self.owner, "Esta funcion solo puede ser accedida por el owner"
+    bookToReturn: Book = self.booksByTitle[title]
+    assert bookToReturn.bookTitle != empty(String[36]), "No se encuentra el libro indicado"
+    return bookToReturn

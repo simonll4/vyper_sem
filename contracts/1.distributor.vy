@@ -3,16 +3,13 @@
 enum BatchStatus:
     MANUFACTURED
     QUALITY_CHECKED
+    REJECTED
     PACKED
     SHIPPED
-    REJECTED
-
 
 enum ShipmentStatus:
     SHIPPED
     RECEIVED
-
-owner: address
 
 struct ProductBatch:
     productId: String[36]
@@ -25,8 +22,10 @@ struct Shipment:
     sender: address
     receiver: address
     shipmentDate: uint256
-    receivmentDate: uint256
+    recievmentDate: uint256
     actualStatus: ShipmentStatus
+
+owner: address
 
 shipments: HashMap[String[15], Shipment]
 
@@ -38,15 +37,17 @@ def __init__():
 def saveNewShipment(shipment: Shipment):
     self.shipments[shipment.trackingCode] = shipment
 
-@external 
+@external
 def setShipmentAsReceived(tracking: String[15]):
+    assert msg.sender == self.owner, "Esta operacion solo puede ser realizada por el owner"
     shipment: Shipment = self.shipments[tracking]
+    assert shipment.sender != empty(address), "No se encuentra el envio indicado."
     shipment.actualStatus = ShipmentStatus.RECEIVED
-    shipment.receivmentDate = block.timestamp
+    shipment.recievmentDate = block.timestamp
 
 @view
 @external
-def viewShipmentData(tracking: String[15]) -> Shipment:
+def viewShipment(tracking: String[15]) -> Shipment:
     shipment: Shipment = self.shipments[tracking]
-    assert shipment.sender != empty(address), "No se encuentra el envio con el numero de tracking provisto"
+    assert shipment.sender != empty(address), "No se encuentra el envio indicado."
     return shipment
