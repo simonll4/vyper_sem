@@ -27,7 +27,7 @@ def rentBook(title: String[36]) -> Book:
     assert book.bookState == BookStates.AVAILABLE, "El libro no esta disponible en este momento" # Verifica si el book esta disponible
     book.bookState = BookStates.RENTED
     book.rentDate = block.timestamp # Obtenemos fecha de hoy
-    book.returnDate = book.rentDate + 10 # Seteamos la fecha de devolucion hoy + ...
+    book.returnDate = book.rentDate + 604800 # Seteamos la fecha de devolucion hoy + ...
     self.booksByTitle[book.bookTitle] = book # Guardamos el libro pero en estado rentado
     return book
 
@@ -35,7 +35,6 @@ def rentBook(title: String[36]) -> Book:
 def returnBook(book: Book):
     assert book.bookState != BookStates.AVAILABLE, "Error en devolucion de libro" # Verifica si el libro recibido del veifier tiene el estado correcto
     self.booksByTitle[book.bookTitle] = book
-
 
 @external
 def loadNewBook(id: String[36], title: String[36]):
@@ -53,4 +52,3 @@ def viewBookData(title: String[36]) -> Book:
     bookToReturn: Book = self.booksByTitle[title]
     assert bookToReturn.bookTitle != empty(String[36]), "No se encuentra el libro indicado"
     return bookToReturn
-
