@@ -33,7 +33,7 @@ def rentBook(title: String[36]) -> Book:
 
 @external
 def returnBook(book: Book):
-    assert book.bookState != BookStates.AVAILABLE, "Error en devolucion de libro" # Verifica si el libro recibido del veifier tiene el estado correcto
+    assert book.bookState == BookStates.AVAILABLE, "Error en devolucion de libro" # Verifica si el libro recibido del verifier tiene el estado correcto
     self.booksByTitle[book.bookTitle] = book
 
 
