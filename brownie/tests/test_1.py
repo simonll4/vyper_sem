@@ -31,17 +31,12 @@ def test_rent_book(manager_contract,verifier_contract):
     #lo volvemos a rentar para probar la disponibilidad
     book2 = manager_contract.rentBook("libro 2")
 
+    # devoluciones libros
     sleep(5)
     book1 = manager_contract.viewBookData("libro 1")
     verifier_contract.returnVerification(book1,manager_contract.address)
     sleep(8)
     book2 = manager_contract.viewBookData("libro 2")
     verifier_contract.returnVerification(book2,manager_contract.address)
-    
-
-
-
-#def test_return_book(verifier_contract):
-    
     
     
